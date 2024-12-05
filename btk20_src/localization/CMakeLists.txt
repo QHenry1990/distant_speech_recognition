@@ -2,7 +2,7 @@ include_directories(${GSL_INCLUDE_DIRS})
 include_directories(${NUMPY_INCLUDES})
 add_library(btk20_localization localization.cc mcc_localizer.cc)
 target_link_libraries(btk20_localization
-        GSL::gsl GSL::gslcblas
+        gsl gslcblas
         btk20_stream btk20_feature btk20_square_root)
 
 set_source_files_properties(localization.i PROPERTIES CPLUSPLUS ON)

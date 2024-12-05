@@ -1,7 +1,7 @@
 include_directories(${GSL_INCLUDE_DIRS})
 include_directories(${NUMPY_INCLUDES})
 add_library(btk20_matrix gslmatrix.cc blas1_c.cc linpack_c.cc)
-target_link_libraries(btk20_matrix GSL::gsl GSL::gslcblas btk20_common)
+target_link_libraries(btk20_matrix gsl gslcblas btk20_common)
 
 set_source_files_properties(matrix.i PROPERTIES CPLUSPLUS ON)
 set_source_files_properties(matrix.i PROPERTIES SWIG_FLAGS "-includeall")

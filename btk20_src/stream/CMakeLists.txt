@@ -1,7 +1,7 @@
 include_directories(${GSL_INCLUDE_DIRS})
 include_directories(${NUMPY_INCLUDES})
 add_library(btk20_stream stream.cc file_stream.cc)
-target_link_libraries(btk20_stream GSL::gsl GSL::gslcblas btk20_common)
+target_link_libraries(btk20_stream gsl gslcblas btk20_common)
 
 set_source_files_properties(stream.i PROPERTIES CPLUSPLUS ON)
 #set_source_files_properties(stream.i PROPERTIES SWIG_FLAGS "-includeall")

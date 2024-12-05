@@ -2,7 +2,7 @@ include_directories(${GSL_INCLUDE_DIRS})
 include_directories(${NUMPY_INCLUDES})
 add_library(btk20_feature feature.cc lpc.cc spectralestimator.cc videofeature.cc)
 target_link_libraries(btk20_feature
-        GSL::gsl GSL::gslcblas ${SNDFILE_LIBRARY}
+        gsl gslcblas sndfile
         btk20_common btk20_stream btk20_matrix)
 
 set_source_files_properties(feature.i PROPERTIES CPLUSPLUS ON)

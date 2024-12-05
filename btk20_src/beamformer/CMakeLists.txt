@@ -2,7 +2,7 @@ include_directories(${GSL_INCLUDE_DIRS})
 include_directories(${NUMPY_INCLUDES})
 add_library(btk20_beamformer beamformer.cc taylorseries.cc modalbeamformer.cc tracker.cc)
 target_link_libraries(btk20_beamformer
-        GSL::gsl GSL::gslcblas
+        gsl gslcblas
         btk20_stream btk20_matrix btk20_feature btk20_modulated btk20_postfilter)
 
 set_source_files_properties(beamformer.i PROPERTIES CPLUSPLUS ON)

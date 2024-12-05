@@ -2,7 +2,7 @@ include_directories(${GSL_INCLUDE_DIRS})
 include_directories(${NUMPY_INCLUDES})
 add_library(btk20_dereverberation dereverberation.cc)
 target_link_libraries(btk20_dereverberation
-        GSL::gsl GSL::gslcblas
+        gsl gslcblas
         btk20_stream btk20_matrix btk20_feature)
 
 set_source_files_properties(dereverberation.i PROPERTIES CPLUSPLUS ON)

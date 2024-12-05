@@ -2,7 +2,7 @@ include_directories(${GSL_INCLUDE_DIRS})
 include_directories(${NUMPY_INCLUDES})
 add_library(btk20_tde tde.cc)
 target_link_libraries(btk20_tde
-        GSL::gsl GSL::gslcblas
+        gsl gslcblas
         btk20_stream btk20_feature btk20_modulated)
 
 set_source_files_properties(tde.i PROPERTIES CPLUSPLUS ON)

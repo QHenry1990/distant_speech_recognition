@@ -1,8 +1,7 @@
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.26)
 project(btk20)
 
-# Command example:
-# mkdir -p build; cd build; cmake -DCMAKE_INSTALL_PREFIX=$HOME/local .. && make install
+set(CMAKE_INSTALL_PREFIX /home/hhquan/anaconda3/envs/btk)
 
 # Setting installation directory
 set(CMAKE_INSTALL_INCLUDEDIR "include" CACHE STRING
@@ -11,7 +10,8 @@ set(CMAKE_INSTALL_LIBDIR "lib" CACHE STRING
                          "Installation directory for library")
 set(TARGET_PYTHON_VERSION "2.7" CACHE STRING
                           "python version to be used")
-set(PYTHON_SITE_PACKAGES "lib/python${TARGET_PYTHON_VERSION}/dist-packages/${PROJECT_NAME}")
+set(PYTHON_SITE_PACKAGES "lib/python${TARGET_PYTHON_VERSION}/site-packages/${PROJECT_NAME}")
+
 message(STATUS "Setting installation directory...")
 message(STATUS "   Include: ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}")
 message(STATUS "   Lib:     ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}")
@@ -26,54 +26,86 @@ set(CMAKE_CXX_FLAGS_DEBUG "-g")
 # print verbose information for memory debugging
 # add_definitions(-DDEBUG_MEMORY_MANAGER)
 add_definitions(-DENABLE_LEGACY_BTK_API)
+add_definitions(-DNPY_NO_DEPRECATED_API)
 
 # For swig
-find_package(SWIG 3.0 REQUIRED)
+find_package(SWIG 4.0 COMPONENTS python)
+if(SWIG_FOUND)
+    message("SWIG found: ${SWIG_EXECUTABLE}")
+    if(NOT SWIG_fortran_FOUND)
+        message(WARNING "SWIG Fortran bindings cannot be generated")
+    endif()
+endif()
 include(${SWIG_USE_FILE})
 set(CMAKE_SWIG_FLAGS "-I${CMAKE_SOURCE_DIR}" "-I${CMAKE_SOURCE_DIR}/include")
 
-# For python binding
-find_package(PythonLibs ${TARGET_PYTHON_VERSION} REQUIRED)
-include_directories(${PYTHON_INCLUDE_PATH})
-message(STATUS "PYTHON_INCLUDE_PATH: ${PYTHON_INCLUDE_PATH}")
-message(STATUS "PYTHON_LIBRARIES:    ${PYTHON_LIBRARIES}")
+# For python binding 3.18高版本有用
+find_package(Python COMPONENTS Interpreter Development)
 
-find_package(PythonInterp ${TARGET_PYTHON_VERSION} REQUIRED)
+message(STATUS "python = " ${Python_FOUND})
+message(STATUS "python = " ${Python_INCLUDE_DIRS})
+message(STATUS "python = " ${Python_LIBRARY_DIRS})
+message(STATUS "python = " ${Python_LIBRARIES})
 
-# For numpy
-add_definitions(-DNPY_NO_DEPRECATED_API)
-if(NOT PYTHON_NUMPY_INCLUDE_DIR)
-       message(STATUS "Searchinig numpy...")
-       include("FindNumPy.cmake")
-       if (NOT NUMPY_FOUND)
-          message(FATAL_ERROR "Could not find NUMPY!")
-       endif ()
-endif(NOT PYTHON_NUMPY_INCLUDE_DIR)
+message(STATUS "numpy " ${Python_NumPy_FOUND})
+message(STATUS "numpy " ${Python_NumPy_INCLUDE_DIRS})
+message(STATUS "numpy " ${Python_NumPy_VERSION})
 
-# For GSL
-find_package(GSL REQUIRED)
+# numpy的头文件
+execute_process (
+    COMMAND ${Python_EXECUTABLE} -c import\ numpy\;\ print\(numpy.get_include\(\)\)\;
+    ERROR_VARIABLE NUMPY_FIND_ERROR
+    RESULT_VARIABLE NUMPY_FIND_RESULT
+    OUTPUT_VARIABLE NUMPY_FIND_OUTPUT
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+message(STATUS "numpy = " ${NUMPY_FIND_OUTPUT})
+set(NUMPY_INCLUDES ${NUMPY_FIND_OUTPUT})
 
-# For libsndfile
-include("FindSndFile.cmake")
+# numpy的版本
+if (Python_FOUND)
+    execute_process (
+        COMMAND ${Python_EXECUTABLE} -c import\ numpy\;\ print\(numpy.__version__\)\;
+        ERROR_VARIABLE NUMPY_API_VERSION_ERROR
+        RESULT_VARIABLE NUMPY_API_VERSION_RESULT
+        OUTPUT_VARIABLE NUMPY_API_VERSION
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+endif()
+message(STATUS "NUMPY_API_VERSION = " ${NUMPY_API_VERSION})
 
-# For CUDA
-find_package(CUDA 9.0)
-if(NOT CUDA_VERSION)
-       message(STATUS "Skipping CUDA support")
-else()
-       add_definitions(-DUSE_GPU)
-       message (STATUS "CUDA_ROOT_DIR     = ${CUDA_TOOLKIT_ROOT_DIR}")
-       message (STATUS "CUDA_INCLUDE_DIRS = ${CUDA_INCLUDE_DIRS}")
-       message (STATUS "CUDA_LIBRARIES    = ${CUDA_LIBRARIES}")
-endif(NOT CUDA_VERSION)
+# numpy的库文件
+message(STATUS "site package = " ${PYTHON_SITE_PACKAGES})
+unset(NUMPY_LIBRARIES)
+if (PYTHON_SITE_PACKAGES)
+    find_library(NUMPY_NPYMATH_LIBRARY NAMES libnpymath.a
+        HINTS /home/hhquan/anaconda3/envs/btk/lib/python2.7/site-packages/numpy/core/lib        
+    )
+    if (NUMPY_NPYMATH_LIBRARY)
+            list (APPEND NUMPY_LIBRARIES ${NUMPY_NPYMATH_LIBRARY})
+    endif()
+endif()
 
-# For pytorch
-#find_package(Torch)
+message (STATUS "NUMPY_INCLUDES    = " ${NUMPY_INCLUDES})
+message (STATUS "NUMPY_LIBRARIES   = " ${NUMPY_LIBRARIES})
+message (STATUS "NUMPY_API_VERSION = " ${NUMPY_API_VERSION})
+
+# sndfile库
+include_directories(/home/hhquan/anaconda3/envs/tuya/include)
+link_directories(/home/hhquan/anaconda3/envs/tuya/lib)
+
+# GSL库
+set(GSL_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/gsl_release/include)
+link_directories(${PROJECT_SOURCE_DIR}/gsl_release/lib)
+set(GSL_LIBRARIES gsl)
+set(GSL_CBLAS_LIBRARY gslcblas)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR})
 
-#### BTK20 library
+include_directories(${Python_INCLUDE_DIRS})
+link_directories(${Python_LIBRARY_DIRS})
+link_libraries(${Python_LIBRARIES})
 
 # Basic functions
 include_directories(common)

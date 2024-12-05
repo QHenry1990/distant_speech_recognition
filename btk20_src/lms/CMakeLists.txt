@@ -2,7 +2,7 @@ include_directories(${GSL_INCLUDE_DIRS})
 include_directories(${NUMPY_INCLUDES})
 add_library(btk20_lms lms.cc)
 target_link_libraries(btk20_lms
-        GSL::gsl GSL::gslcblas
+        gsl gslcblas
         btk20_stream btk20_matrix btk20_convolution)
 
 set_source_files_properties(lms.i PROPERTIES CPLUSPLUS ON)

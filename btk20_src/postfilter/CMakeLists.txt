@@ -3,7 +3,7 @@ include_directories(${NUMPY_INCLUDES})
 add_library(btk20_postfilter postfilter.cc binauralprocessing.cc
 postfilter.cc spectralsubtraction.cc ${CMAKE_SOURCE_DIR}/beamformer/beamformer.cc)
 target_link_libraries(btk20_postfilter
-        GSL::gsl GSL::gslcblas
+        gsl gslcblas
         btk20_stream btk20_matrix btk20_modulated)
 
 set_source_files_properties(postfilter.i PROPERTIES CPLUSPLUS ON)

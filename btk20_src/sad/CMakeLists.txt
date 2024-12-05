@@ -2,7 +2,7 @@ include_directories(${GSL_INCLUDE_DIRS})
 include_directories(${NUMPY_INCLUDES})
 add_library(btk20_sad sad.cc ica.cc sad_feature.cc neural_spnsp_det.c)
 target_link_libraries(btk20_sad
-        GSL::gsl GSL::gslcblas 
+        gsl gslcblas 
         btk20_stream btk20_feature)
 
 set_source_files_properties(sad.i PROPERTIES CPLUSPLUS ON)

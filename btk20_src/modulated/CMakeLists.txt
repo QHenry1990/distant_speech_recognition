@@ -2,7 +2,7 @@ include_directories(${GSL_INCLUDE_DIRS})
 include_directories(${NUMPY_INCLUDES})
 add_library(btk20_modulated modulated.cc prototype_design.cc pc_lattice.c)
 target_link_libraries(btk20_modulated
-        GSL::gsl GSL::gslcblas ${SNDFILE_LIBRARY}
+        gsl gslcblas sndfile
         btk20_common btk20_stream)
 
 set_source_files_properties(modulated.i PROPERTIES CPLUSPLUS ON)

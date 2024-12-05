@@ -2,7 +2,7 @@ include_directories(${GSL_INCLUDE_DIRS})
 include_directories(${NUMPY_INCLUDES})
 add_library(btk20_aec aec.cc)
 target_link_libraries(btk20_aec
-        GSL::gsl GSL::gslcblas
+        gsl gslcblas
         btk20_stream)
 
 set_source_files_properties(aec.i PROPERTIES CPLUSPLUS ON)

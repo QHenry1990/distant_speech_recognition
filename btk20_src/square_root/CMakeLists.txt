@@ -2,7 +2,7 @@ include_directories(${GSL_INCLUDE_DIRS})
 include_directories(${NUMPY_INCLUDES})
 add_library(btk20_square_root square_root.cc)
 target_link_libraries(btk20_square_root
-        GSL::gsl GSL::gslcblas
+        gsl gslcblas
         btk20_common)
 
 set_source_files_properties(square_root.i PROPERTIES CPLUSPLUS ON)
